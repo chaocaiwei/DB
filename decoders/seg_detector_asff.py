@@ -49,7 +49,7 @@ class SegDetectorAsff(SegDetector):
         self.conv3.apply(self.weights_init)
         self.conv2.apply(self.weights_init)
 
-        self.prob = nn.Sequential(
+        self.binarize = nn.Sequential(
             nn.Conv2d(inner_channels, inner_channels //
                       4, 3, padding=1, bias=bias),
             BatchNorm2d(inner_channels//4),
@@ -59,18 +59,16 @@ class SegDetectorAsff(SegDetector):
             nn.ReLU(inplace=True),
             nn.ConvTranspose2d(inner_channels//4, 1, 2, 2),
             nn.Sigmoid())
-        self.prob.apply(self.weights_init)
+        self.binarize.apply(self.weights_init)
 
         self.adaptive = adaptive
-        self.thresh = self._init_thresh(
+        if adaptive:
+            self.thresh = self._init_thresh(
                     inner_channels, serial=serial, smooth=smooth, bias=bias)
-        self.thresh.apply(self.weights_init)
+            self.thresh.apply(self.weights_init)
 
-
-
-    # 像素不失2的倍数情况 up5 + in4 维度不统一
-    def forward(self, X):
-        c2, c3, c4, c5 = X
+    def forward(self, features, gt=None, masks=None, training=False):
+        c2, c3, c4, c5 = features
         in5 = self.in5(c5)
         in4 = self.in4(c4)
         in3 = self.in3(c3)
@@ -90,27 +88,28 @@ class SegDetectorAsff(SegDetector):
         asff2 = self.asff2(p5, p4, p3, p2)
         asff3 = self.asff3(p5, p4, p3, p2)
 
-        out0 = self.out5(asff0)
-        out1 = self.out4(asff1)
-        out2 = self.out3(asff2)
-        out3 = asff3
+        out5 = self.out5(asff0)
+        out4 = self.out4(asff1)
+        out3 = self.out3(asff2)
+        out2 = asff3
 
-        fuse = torch.cat((out0, out1, out2, out3), 1)
-        prob = self.prob(fuse)
+        fuse = torch.cat((out5, out4, out3, out2), 1)
+        # this is the pred module, not binarization module;
+        # We do not correct the name due to the trained model.
+        binary = self.binarize(fuse)
         if self.training:
-            result = OrderedDict(prob=prob)
+            result = OrderedDict(binary=binary)
         else:
-            return prob
-        if self.training:
+            return binary
+        if self.adaptive and self.training:
             if self.serial:
                 fuse = torch.cat(
                         (fuse, nn.functional.interpolate(
-                            prob, fuse.shape[2:])), 1)
+                            binary, fuse.shape[2:])), 1)
             thresh = self.thresh(fuse)
-            binary = self.step_function(prob, thresh)
-            result.update(thresh=thresh, binary=binary)
+            thresh_binary = self.step_function(binary, thresh)
+            result.update(thresh=thresh, thresh_binary=thresh_binary)
         return result
-
 
     def weights_init(self, m):
         classname = m.__class__.__name__

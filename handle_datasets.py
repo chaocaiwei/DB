@@ -5,7 +5,9 @@
 import os
 import shutil
 import argparse
-
+import cv2
+import numpy as np
+import math
 
 def mov_fild(base, training):
 
@@ -26,7 +28,7 @@ def mov_fild(base, training):
             shutil.move(cur_path, i_path)
         elif ext == 'gt':
             m_path = gt_path + file
-            rename_path = gt_path + fid + '.txt'
+            rename_path = gt_path + file + '.txt'
             shutil.move(cur_path, gt_path)
             os.rename(m_path, rename_path)
 
@@ -40,6 +42,35 @@ def create_list_path(base, training):
     with open(list_path, 'w') as fd:
         for file in files:
             fd.write(file + '\n')
+
+def modify_gts(base, is_training):
+    path = base + 'train_gts/' if is_training else base + 'test_gts/'
+    files = os.listdir(path)
+    for file in files:
+        cur_path = os.path.join(path, file)
+        reader = open(cur_path, 'r').readlines()
+        txts = []
+        for line in reader:
+            line = line.encode('utf-8').decode('utf-8-sig')
+            line = line.replace('\xef\xbb\xbf', '')
+            line = line.replace('\n', '')
+            gt = line.split(' ')
+
+            is_difficult = np.int64(gt[1])
+            w_ = np.float64(gt[4])
+            h_ = np.float64(gt[5])
+            x1 = np.float64(gt[2]) + w_ / 2.0
+            y1 = np.float64(gt[3]) + h_ / 2.0
+            theta = np.float64(gt[6]) / math.pi * 180
+
+            bbox = cv2.boxPoints(((x1, y1), (w_, h_), theta))
+            points = list(bbox.reshape(-1))
+            dst_txt = ','.join([str(i) for i in points]) + ',' + str(is_difficult)
+            txts.append(dst_txt)
+        with open(cur_path, 'r+') as file:
+            file.truncate(0)
+            for txt in txts:
+                file.write(txt + '\n')
 
 
 # Press the green button in the gutter to run the script.
@@ -55,6 +86,5 @@ if __name__ == '__main__':
     mov_fild(base, False)
     create_list_path(base, True)
     create_list_path(base, False)
-
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    modify_gts(base,True)
+    mov_fild(base, False)

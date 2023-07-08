@@ -28,6 +28,13 @@ class ImageDataset(data.Dataset, Configurable):
         else:
             self.is_training = False
         self.debug = cmd.get('debug', False)
+        if 'data_dir' in cmd:
+            data_dir = cmd['data_dir']
+            data_list = data_dir + '/train_list.txt' if self.is_training else data_dir + '/test_list.txt'
+            self.data_dir = [data_dir]
+            self.data_list = [data_list]
+
+
         self.image_paths = []
         self.gt_paths = []
         self.get_all_samples()
