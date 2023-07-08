@@ -10,7 +10,7 @@ define:
             class: Builder
             model: SegDetectorModel
             model_args:
-                backbone: resnet50
+                backbone: se_resnet50
                 decoder: SegDetector
                 decoder_args: 
                     adaptive: True
@@ -39,7 +39,7 @@ define:
             resume: null
         model_saver: 
             class: ModelSaver
-            dir_path: model
+            dir_path: model/td500_se
             save_interval: 18000
             signal_path: save
         scheduler: 
