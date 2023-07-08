@@ -29,11 +29,13 @@ class Logger(Configurable):
     def __init__(self, **kwargs):
         self.load_all(**kwargs)
 
-        self._make_storage()
-
         cmd = kwargs['cmd']
         self.name = cmd['name']
+
+        if 'out_dir' in cmd:
+            self.log_dir = cmd['out_dir'] + self.log_dir
         self.log_dir = os.path.join(self.log_dir, self.name)
+
         try:
             self.verbose = cmd['verbose']
         except:
@@ -56,15 +58,6 @@ class Logger(Configurable):
         self.logged = -1
         self.speed = None
         self.eta_time = None
-
-    def _make_storage(self):
-        application = os.path.basename(os.getcwd())
-        storage_dir = os.path.join(
-            self.database_dir, self.log_dir, application)
-        if not os.path.exists(storage_dir):
-            os.makedirs(storage_dir)
-        if not os.path.exists(self.log_dir):
-            os.symlink(storage_dir, self.log_dir)
 
     def save_dir(self, dir_name):
         return os.path.join(self.log_dir, dir_name)
