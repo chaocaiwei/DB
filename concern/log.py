@@ -50,8 +50,7 @@ class Logger(Configurable):
         if self.verbose:
             print('Initializing log dir for', self.log_dir)
 
-
-        if not os.path.exists(self.out_dir):
+        if (self.out_dir is not None) and (not os.path.exists(self.out_dir)):
             os.makedirs(self.out_dir)
         if not os.path.exists(self.log_dir):
             os.makedirs(self.log_dir)
