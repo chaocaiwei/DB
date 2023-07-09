@@ -13,7 +13,7 @@ class SegDetectorAsff(nn.Module):
                  inner_channels=256, k=10,
                  bias=False, adaptive=False, smooth=False, serial=False,
                  *args, **kwargs):
-        super(SegDetector, self).__init__()
+        super(SegDetectorAsff, self).__init__()
         self.k = k
         self.serial = serial
         self.up5 = nn.Upsample(scale_factor=2, mode='nearest')

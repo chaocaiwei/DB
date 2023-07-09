@@ -15,9 +15,9 @@ class OptimizerScheduler(Configurable):
         learning_rate['lr'] = optimizer_args['lr']
         if 'lr' in cmd:
             self.optimizer_args['lr'] = cmd['lr']
+        if 'epochs' in cmd:
+            learning_rate['epochs'] = cmd['epochs']
         self.load('learning_rate', cmd=cmd, **kwargs)
-        
-
 
     def create_optimizer(self, parameters):
         optimizer = getattr(torch.optim, self.optimizer)(
