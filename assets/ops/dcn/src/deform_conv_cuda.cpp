@@ -571,8 +571,8 @@ void modulated_deform_conv_cuda_backward(
     int kernel_h, int kernel_w, int stride_h, int stride_w, int pad_h,
     int pad_w, int dilation_h, int dilation_w, int group, int deformable_group,
     const bool with_bias) {
-  AT_CHECK(input.is_contiguous(), "input tensor has to be contiguous");
-  AT_CHECK(weight.is_contiguous(), "weight tensor has to be contiguous");
+  TORCH_CHECK(input.is_contiguous(), "input tensor has to be contiguous");
+  TORCH_CHECK(weight.is_contiguous(), "weight tensor has to be contiguous");
 
   const int batch = input.size(0);
   const int channels = input.size(1);
