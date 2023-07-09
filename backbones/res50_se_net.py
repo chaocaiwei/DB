@@ -60,7 +60,7 @@ class SEResNet(nn.Module):
             elif isinstance(m, BatchNorm2d):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
-        if self.dcn is not None:
+        if self.dcn is not None and torch.cuda.is_available():
             for m in self.modules():
                 if isinstance(m, Bottleneck) or isinstance(m, BasicBlock):
                     if hasattr(m, 'conv2_offset'):
