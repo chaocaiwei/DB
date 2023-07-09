@@ -10,7 +10,7 @@ define:
             class: Builder
             model: SegDetectorModel
             model_args:
-                backbone: deformable_se_resnet50
+                backbone: se_resnet50
                 decoder: SegDetectorAsff
                 decoder_args: 
                     adaptive: True
