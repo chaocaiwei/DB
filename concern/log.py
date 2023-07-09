@@ -29,12 +29,19 @@ class Logger(Configurable):
     def __init__(self, **kwargs):
         self.load_all(**kwargs)
 
+
+
         cmd = kwargs['cmd']
         self.name = cmd['name']
 
-        if 'out_dir' in cmd:
-            self.log_dir = cmd['out_dir'] + self.log_dir
-        self.log_dir = os.path.join(self.log_dir, self.name)
+        self.log_path = self.log_dir
+
+        if 'result_dir' in cmd:
+            self.out_dir = cmd['result_dir']
+            self.log_dir = os.path.join(self.out_dir, self.log_path, self.name)
+            self.log_path = os.path.join(self.log_path, self.name)
+        else:
+            self.log_dir = os.path.join(self.log_path, self.name)
 
         try:
             self.verbose = cmd['verbose']
@@ -43,8 +50,12 @@ class Logger(Configurable):
         if self.verbose:
             print('Initializing log dir for', self.log_dir)
 
+
+        if not os.path.exists(self.out_dir):
+            os.makedirs(self.out_dir)
         if not os.path.exists(self.log_dir):
             os.makedirs(self.log_dir)
+        self._make_storage()
 
         self.message_logger = self._init_message_logger()
 
@@ -58,6 +69,19 @@ class Logger(Configurable):
         self.logged = -1
         self.speed = None
         self.eta_time = None
+
+    def _make_storage(self):
+        application = os.path.basename(os.getcwd())
+        if self.out_dir is not None and self.log_path is not None:
+            storage_dir = os.path.join(
+                self.out_dir, self.database_dir, self.log_path, application)
+        else:
+            storage_dir = os.path.join(
+            self.database_dir, self.log_dir, application)
+        if not os.path.exists(storage_dir):
+            os.makedirs(storage_dir)
+        if not os.path.exists(self.log_dir):
+            os.symlink(storage_dir, self.log_dir)
 
     def save_dir(self, dir_name):
         return os.path.join(self.log_dir, dir_name)

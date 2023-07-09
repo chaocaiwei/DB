@@ -66,7 +66,6 @@ def main():
     parser.add_argument('-g', '--num_gpus', dest='num_gpus', default=1,
                         type=int, help='The number of accessible gpus')
     parser.add_argument('--data-dir', dest='data_dir')
-    parser.add_argument('--out-dir', dest='out_dir')
     parser.set_defaults(debug=False, verbose=False)
 
     args = parser.parse_args()

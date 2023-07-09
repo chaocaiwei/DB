@@ -10,7 +10,7 @@ define:
             class: Builder
             model: SegDetectorModel
             model_args:
-                backbone: resnet50
+                backbone: deformable_resnet50
                 decoder: SegDetector
                 decoder_args: 
                     adaptive: True
@@ -61,7 +61,7 @@ define:
                 class: DataLoader
                 dataset: ^validate_data
                 batch_size: 1
-                num_workers: 8
+                num_workers: 16
                 collect_fn:
                     class: ICDARCollectFN
         visualize: false
