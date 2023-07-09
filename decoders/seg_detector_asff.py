@@ -5,7 +5,8 @@ from backbones.asff import ASFFNetwork
 from .seg_detector import SegDetector
 from torch.nn import BatchNorm2d
 
-class SegDetectorAsff(SegDetector):
+
+class SegDetectorAsff(nn.Module):
 
     def __init__(self,
                  in_channels=[64, 128, 256, 512],
