@@ -2,6 +2,7 @@ import torch.nn as nn
 import math
 import torch.utils.model_zoo as model_zoo
 BatchNorm2d = nn.BatchNorm2d
+import torch
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
@@ -42,7 +43,8 @@ class BasicBlock(nn.Module):
             fallback_on_stride = dcn.get('fallback_on_stride', False)
             self.with_modulated_dcn = dcn.get('modulated', False)
         # self.conv2 = conv3x3(planes, planes)
-        if not self.with_dcn or fallback_on_stride:
+
+        if not self.with_dcn or fallback_on_stride or not torch.cuda.is_available():
             self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
                                    padding=1, bias=False)
         else:
@@ -113,7 +115,7 @@ class Bottleneck(nn.Module):
         if self.with_dcn:
             fallback_on_stride = dcn.get('fallback_on_stride', False)
             self.with_modulated_dcn = dcn.get('modulated', False)
-        if not self.with_dcn or fallback_on_stride:
+        if not self.with_dcn or fallback_on_stride or not torch.cuda.is_available():
             self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
                                    stride=stride, padding=1, bias=False)
         else:
