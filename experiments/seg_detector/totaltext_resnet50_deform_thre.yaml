@@ -38,7 +38,7 @@ define:
             resume: null
         model_saver: 
             class: ModelSaver
-            dir_path: model/totaltext
+            dir_path: model/totaltext_org
             save_interval: 18000
             signal_path: save
         scheduler: 
