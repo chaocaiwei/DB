@@ -183,6 +183,7 @@ class Eval:
                     if self.args['test_speed']:
                         time_cost = self.report_speed(model, batch, times=50)
                         continue
+                    print('model.forward 之前')
                     pred = model.forward(batch, training=False)
                     print('model.forward 成功')
                     output = self.structure.representer.represent(batch, pred, is_output_polygon=self.args['polygon']) 
