@@ -123,5 +123,5 @@ def deformable_se_resnet50(pretrained=True, **kwargs):
                    **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(
-            model_urls['resnet50']), strict=False)
+            model_urls['resnet50'], map_location='cuda:0'), strict=False)
     return model
