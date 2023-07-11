@@ -2,7 +2,6 @@ import torch.nn as nn
 import math
 import torch.utils.model_zoo as model_zoo
 BatchNorm2d = nn.BatchNorm2d
-import torch
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
@@ -34,7 +33,7 @@ class BasicBlock(nn.Module):
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, dcn=None):
         super(BasicBlock, self).__init__()
-        self.with_dcn = (dcn is not None) and (torch.cuda.is_available())
+        self.with_dcn = dcn is not None
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
@@ -43,7 +42,6 @@ class BasicBlock(nn.Module):
             fallback_on_stride = dcn.get('fallback_on_stride', False)
             self.with_modulated_dcn = dcn.get('modulated', False)
         # self.conv2 = conv3x3(planes, planes)
-
         if not self.with_dcn or fallback_on_stride:
             self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
                                    padding=1, bias=False)
@@ -107,7 +105,7 @@ class Bottleneck(nn.Module):
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, dcn=None):
         super(Bottleneck, self).__init__()
-        self.with_dcn = (dcn is not None) and (torch.cuda.is_available())
+        self.with_dcn = dcn is not None
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = BatchNorm2d(planes)
         fallback_on_stride = False
@@ -142,6 +140,7 @@ class Bottleneck(nn.Module):
         self.downsample = downsample
         self.stride = stride
         self.dcn = dcn
+        self.with_dcn = dcn is not None
 
     def forward(self, x):
         residual = x
