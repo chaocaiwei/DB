@@ -172,37 +172,19 @@ class Eval:
         model = self.init_model()
         self.resume(model, self.model_path)
         print('加载模型成功')
-        all_matircs = {}
         model.eval()
-        vis_images = dict()
         with torch.no_grad():
             for _, data_loader in self.data_loaders.items():
                 print('data_loader 成功')
                 raw_metrics = []
                 for i, batch in tqdm(enumerate(data_loader), total=len(data_loader)):
-                    if self.args['test_speed']:
-                        time_cost = self.report_speed(model, batch, times=50)
-                        continue
                     print('model.forward 之前')
                     pred = model.forward(batch, training=False)
-                    print('model.forward 成功')
-                    #output = self.structure.representer.represent(batch, pred, is_output_polygon=self.args['polygon'])
-                    print('represent 成功')
-                    if not os.path.isdir(self.args['result_dir']):
-                        os.mkdir(self.args['result_dir'])
-                    #self.format_output(batch, output)
-                    print('format_output 成功')
-                    #raw_metric = self.structure.measurer.validate_measure(batch, output, is_output_polygon=self.args['polygon'], box_thresh=self.args['box_thresh'])
-                    #raw_metrics.append(raw_metric)
-                    print('raw_metric 成功')
-
-                    #if visualize and self.structure.visualizer:
-                        #vis_image = self.structure.visualizer.visualize(batch, output, pred)
-                        #self.logger.save_image_dict(vis_image)
-                        #vis_images.update(vis_image)
+                    print('model.forward 之后')
                 metrics = self.structure.measurer.gather_measure(raw_metrics, self.logger)
                 for key, metric in metrics.items():
                     self.logger.info('%s : %f (%d)' % (key, metric.avg, metric.count))
+
 
 if __name__ == '__main__':
     main()
