@@ -171,23 +171,27 @@ class Eval:
         self.init_torch_tensor()
         model = self.init_model()
         self.resume(model, self.model_path)
+        print('加载模型成功')
         all_matircs = {}
         model.eval()
         vis_images = dict()
         with torch.no_grad():
             for _, data_loader in self.data_loaders.items():
+                print('data_loader 成功')
                 raw_metrics = []
                 for i, batch in tqdm(enumerate(data_loader), total=len(data_loader)):
                     if self.args['test_speed']:
                         time_cost = self.report_speed(model, batch, times=50)
                         continue
                     pred = model.forward(batch, training=False)
+                    print('model.forward 成功')
                     output = self.structure.representer.represent(batch, pred, is_output_polygon=self.args['polygon']) 
                     if not os.path.isdir(self.args['result_dir']):
                         os.mkdir(self.args['result_dir'])
                     self.format_output(batch, output)
                     raw_metric = self.structure.measurer.validate_measure(batch, output, is_output_polygon=self.args['polygon'], box_thresh=self.args['box_thresh'])
                     raw_metrics.append(raw_metric)
+                    print('raw_metric 成功')
 
                     if visualize and self.structure.visualizer:
                         vis_image = self.structure.visualizer.visualize(batch, output, pred)
