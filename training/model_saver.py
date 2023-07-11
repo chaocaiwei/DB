@@ -14,11 +14,6 @@ class ModelSaver(Configurable):
     def __init__(self, **kwargs):
         self.load_all(**kwargs)
 
-        cmd = kwargs['cmd']
-        if 'result_dir' in cmd:
-            out_dir = cmd['result_dir']
-            self.dir_path = out_dir + self.dir_path
-
         # BUG: signal path should not be global
         self.monitor = SignalMonitor(self.signal_path)
 
