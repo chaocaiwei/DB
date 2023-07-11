@@ -72,9 +72,16 @@ def main():
     args = vars(args)
     args = {k: v for k, v in args.items() if v is not None}
 
+
     conf = Config()
     experiment_args = conf.compile(conf.load(args['exp']))['Experiment']
     experiment_args.update(cmd=args)
+
+    model_args = experiment_args['structure']['builder']['model_args']
+    if not 'backbone_args' in model_args:
+        model_args['backbone_args'] = {}
+    model_args['backbone_args']['pretrained'] = False
+
     experiment = Configurable.construct_class_from_config(experiment_args)
 
     Eval(experiment, experiment_args, cmd=args, verbose=args['verbose']).eval(args['visualize'])
