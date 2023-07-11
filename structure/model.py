@@ -29,6 +29,7 @@ def parallelize(model, distributed, local_rank):
     else:
         return nn.DataParallel(model)
 
+
 class SegDetectorModel(nn.Module):
     def __init__(self, args, device, distributed: bool = False, local_rank: int = 0):
         super(SegDetectorModel, self).__init__()
@@ -36,10 +37,10 @@ class SegDetectorModel(nn.Module):
 
         self.model = BasicModel(args)
         # for loading models
-        self.model = parallelize(self.model, distributed, local_rank)
+        self.model = self.model
         self.criterion = SegDetectorLossBuilder(
             args['loss_class'], *args.get('loss_args', []), **args.get('loss_kwargs', {})).build()
-        self.criterion = parallelize(self.criterion, distributed, local_rank)
+        self.criterion = self.criterion
         self.device = device
         self.to(self.device)
 
