@@ -60,11 +60,6 @@ class BasicBlock(nn.Module):
         # out = self.conv2(out)
         if not self.with_dcn:
             out = self.conv2(out)
-        elif self.with_modulated_dcn:
-            offset_mask = self.conv2_offset(out)
-            offset = offset_mask[:, :18, :, :]
-            mask = offset_mask[:, -9:, :, :].sigmoid()
-            out = self.conv2(out, offset, mask)
         else:
             offset = self.conv2_offset(out)
             out = self.conv2(out, offset)
@@ -115,11 +110,6 @@ class Bottleneck(nn.Module):
         # out = self.conv2(out)
         if not self.with_dcn:
             out = self.conv2(out)
-        elif self.with_modulated_dcn:
-            offset_mask = self.conv2_offset(out)
-            offset = offset_mask[:, :18, :, :]
-            mask = offset_mask[:, -9:, :, :].sigmoid()
-            out = self.conv2(out, offset, mask)
         else:
             offset = self.conv2_offset(out)
             out = self.conv2(out, offset)
