@@ -30,9 +30,9 @@ define:
   - name: validate_data
     class: ImageDataset
     data_dir:
-        - './datasets/TD_TR/TD500/'
+        - './datasets/MSRA-TD500/'
     data_list:
-        - './datasets/TD_TR/TD500/test_list.txt'
+        - './datasets/MSRA-TD500/test_list.txt'
     processes:
         - class: AugmentDetectionData
           augmenter_args:
