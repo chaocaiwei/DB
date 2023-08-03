@@ -44,18 +44,18 @@ class ASFFNetwork(nn.Module):
         elif level == 1:
             self.compress_level_0 = add_conv(dim[0], self.inter_dim, 1, 1, leaky=False)
             self.stride_level_2 = add_conv(dim[2], self.inter_dim, 3, 2, leaky=False)
-            self.stride_level_3 = add_conv(dim[2], self.inter_dim, 3, 2, leaky=False)
-            self.expand = add_conv(self.inter_dim, out_channnels[0], 3, 1, leaky=False)
+            self.stride_level_3 = add_conv(dim[3], self.inter_dim, 3, 2, leaky=False)
+            self.expand = add_conv(self.inter_dim, out_channnels[1], 3, 1, leaky=False)
         elif level == 2:
             self.compress_level_0 = add_conv(dim[0], self.inter_dim, 1, 1, leaky=False)
             self.compress_level_1 = add_conv(dim[1], self.inter_dim, 1, 1, leaky=False)
-            self.stride_level_3 = add_conv(dim[2], self.inter_dim, 3, 2, leaky=False)
-            self.expand = add_conv(self.inter_dim, out_channnels[0], 3, 1, leaky=False)
+            self.stride_level_3 = add_conv(dim[3], self.inter_dim, 3, 2, leaky=False)
+            self.expand = add_conv(self.inter_dim, out_channnels[2], 3, 1, leaky=False)
         elif level == 3:
             self.compress_level_0 = add_conv(dim[0], self.inter_dim, 1, 1, leaky=False)
             self.compress_level_1 = add_conv(dim[1], self.inter_dim, 1, 1, leaky=False)
             self.compress_level_2 = add_conv(dim[2], self.inter_dim, 1, 1, leaky=False)
-            self.expand = add_conv(self.inter_dim, out_channnels[0], 3, 1, leaky=False)
+            self.expand = add_conv(self.inter_dim, out_channnels[3], 3, 1, leaky=False)
 
         compress_c = 8 if rfb else 16  #when adding rfb, we use half number of channels to save memory
 
